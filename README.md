@@ -7,13 +7,12 @@
 - [Starting-kit for Efficient Burst HDR and Restoration @NTIRE2025](#starting-kit-for-efficient-burst-hdr-and-restoratio-ntire2015)
   - [Overview](#overview)
   - [Tips](#tips)
-  - [Possible Solution](#possible-solution)
-  - [Related Dataset](#related-dataset)
+
 
 
 ## Overview
 
-The FEfficient Burst HDR and Restoration is geared towards training neural networks for fusing multi-frame raw images into high-quality sRGB image in scenarios where multi-frame raw have different brightness levels.
+The Efficient Burst HDR and Restoration is geared towards training neural networks for fusing multi-frame raw images into high-quality sRGB image in scenarios where multi-frame raw have different brightness levels.
 
 In this starting kit, we will provide you with a possible solution, but you don't have to follow this approach.
 
