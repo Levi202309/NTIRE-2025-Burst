@@ -56,7 +56,7 @@ considering the characteristics of each frame."*
 The baseline model is given by a very simple concatenated U-net. 
 The shape of input of the network follows `(batch x 9 x 768 x 1536)`, and the output shape follows `(batch x 
 3 x 768 x 1536)`.
-The basic loss implemented in this starting kit is MSE loss. For quick testing, we provide the baseline model. You can download the baseline model from [google drive](https://drive.google.com/drive/folders/1wrgcXPRWY_0W2Tf1lhNypWED0wX3Evoj?usp=drive_link) and then put it into `checkpoint_dir` folder. The trained model is provided in `checkpoint_dir` folder. 
+The basic loss implemented in this starting kit is MSE loss. For quick testing, we provide the baseline model. You can download the baseline model from [google drive](https://drive.google.com/drive/folders/1wrgcXPRWY_0W2Tf1lhNypWED0wX3Evoj?usp=drive_link) and then put it into `checkpoint_dir` folder.
 Its performance is as follows:
 > **\# of model parameters** : 7.701(M)  
 **Total FLOPs of the model** : 0.666(T)   
