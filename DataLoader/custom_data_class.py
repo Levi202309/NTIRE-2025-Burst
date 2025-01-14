@@ -30,21 +30,33 @@ class CustomDataset(torch.utils.data.Dataset):
         input_images = []
 
         if not self.train:
-            idx = idx + 210
+            idx = idx * 10
+            names = os.listdir(self.root_dir)
+            for i in range(9):  # Assuming you have 8 input images per sample
+                img_path = f"{self.root_dir}{names[idx+i+1]}"  # Adjust path according to your naming convention
+                img_tensor = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+                if self.transform:
+                    img_tensor = self.transform(img_tensor)
+                input_images.append(img_tensor)
+            
+            target_img_path = f"{self.root_dir}{names[idx]}"  # Adjust path according to your naming convention
 
-        for i in range(9):  # Assuming you have 8 input images per sample
-            img_path = f"{self.root_dir}Scene-{idx:03}-in-{i}.tif"  # Adjust path according to your naming convention
-
-            img_tensor = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+            target_tensor = cv2.imread(target_img_path, cv2.IMREAD_UNCHANGED)
             if self.transform:
-                img_tensor = self.transform(img_tensor)
-            input_images.append(img_tensor)
+                target_tensor = self.transform(target_tensor)
+        else:
+            for i in range(9):  # Assuming you have 8 input images per sample
+                img_path = f"{self.root_dir}Scene-{idx:03}-in-{i}.tif"  # Adjust path according to your naming convention
+                img_tensor = cv2.imread(img_path, cv2.IMREAD_UNCHANGED)
+                if self.transform:
+                    img_tensor = self.transform(img_tensor)
+                input_images.append(img_tensor)
         
-        target_img_path = f"{self.root_dir}Scene-{idx:03}-gt.tif"  # Adjust path according to your naming convention
+            target_img_path = f"{self.root_dir}Scene-{idx:03}-gt.tif"  # Adjust path according to your naming convention
 
-        target_tensor = cv2.imread(target_img_path, cv2.IMREAD_UNCHANGED)
-        if self.transform:
-            target_tensor = self.transform(target_tensor)
+            target_tensor = cv2.imread(target_img_path, cv2.IMREAD_UNCHANGED)
+            if self.transform:
+                target_tensor = self.transform(target_tensor)
         
         inputs = torch.stack(input_images)  # Stack the input images into a single tensor
         target = target_tensor
