@@ -7,7 +7,7 @@ https://github.com/z-bingo/kernel-prediction-networks-PyTorch/blob/master/train_
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
+import cv2
 import numpy as np
 from fvcore.nn import FlopCountAnalysis, flop_count_table
 import os, sys, time, shutil
@@ -15,7 +15,7 @@ import os, sys, time, shutil
 from PIL import Image
 from torchvision.transforms import transforms
 to_pil_image = transforms.ToPILImage()
-
+import torchvision.transforms.functional as F
 from DataLoader.custom_data_class import CustomDataset
 from models.unet_model import UNet
 import pdb
@@ -32,7 +32,7 @@ def eval(cuda, mGPU=True):
     if not os.path.exists(checkpoint_dir) or len(os.listdir(checkpoint_dir)) == 0:
         print('There is no any checkpoint file in path:{}'.format(checkpoint_dir))
     # the path for saving eval images
-    eval_dir = './eval_dir'
+    eval_dir = './res'
     if not os.path.exists(eval_dir):
         os.mkdir(eval_dir)
 
@@ -76,7 +76,7 @@ def eval(cuda, mGPU=True):
 
     # parameters and flops
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    flops = FlopCountAnalysis(model, torch.ones(1, 9, 2000, 3000).to(device))
+    flops = FlopCountAnalysis(model, torch.ones(1, 9, 768, 1536).to(device))
     print(flop_count_table(flops))
 
     num_params = sum(p.numel() for p in model.parameters())
@@ -93,6 +93,7 @@ def eval(cuda, mGPU=True):
         ssim = 0.0
 
         for i, (burst_noise, gt) in enumerate(data_loader):
+
             t0 = time.time()
             if cuda:
                 burst_noise = burst_noise.cuda()
@@ -100,7 +101,12 @@ def eval(cuda, mGPU=True):
 
             burst_noise = burst_noise.squeeze(2)
             pred = model(burst_noise)
-
+            
+            psnr_t = calculate_psnr(pred.unsqueeze(1), gt.unsqueeze(1))
+            ssim_t = calculate_ssim(pred.unsqueeze(1), gt.unsqueeze(1))
+            # ssim_t=psnr_t
+            psnr += psnr_t
+            ssim += ssim_t
             pred = torch.clamp(pred, 0.0, 1.0)
             t1 = time.time()
 
@@ -108,18 +114,24 @@ def eval(cuda, mGPU=True):
                 pred = pred.cpu()
                 gt = gt.cpu()
                 burst_noise = burst_noise.cpu()
-            print('{}-th image is completed.\t| time: {:.2f} seconds.'.format(i,t1 - t0))
-            if i < 20:
-                for frame in range(9):
-                    pil_image = to_pil_image(burst_noise[0][frame])
-                    pil_image.save(eval_dir+f'/Scene{i}_input{frame}.png')
-                pil_image = to_pil_image(pred[0])
-                pil_image.save(eval_dir+f'/Scene{i}_output.png')
-            else:
-                break
+            print('{}-th image is completed.\t| PSNR: {:.2f}dB\t| SSIM: {:.4f}\t| time: {:.2f} seconds.'.format(i, psnr_t, ssim_t, t1 - t0))
+
+            # to save the output image
+            names = os.listdir("../datasets/val/")
+            ii = i * 10
+
+            cv2.imwrite(eval_dir + f'/' + names[ii][:-6] + f'out.tif', (pred[0]*255).permute(1,2,0).cpu().numpy().astype(np.uint8))
+            # cv2.imwrite(eval_dir + f'/' + names[ii][:-6] + f'gt.tif', (gt[0]*255).permute(1,2,0).cpu().numpy().astype(np.uint8))
+            
+            
+            for frame in range(9):
+                # this is needed to keep the i
+                pass
+
+            
     end_time = time.time()
     print('All images are OK, average PSNR: {:.2f}dB, SSIM: {:.4f}'.format(psnr/(i+1), ssim/(i+1)))
-    print(f'Total Validation time : {end_time - start_time} seconds.')
+    print(f'Total Validation time : {end_time - start_time : .2f} seconds.')
 
 if __name__ == '__main__':
     eval(cuda=True, mGPU=2)
