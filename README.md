@@ -19,12 +19,12 @@ For more details, see https://codalab.lisn.upsaclay.fr/competitions/21191#learn_
 ## Dataset
 The training, validation, and test datasets are constructed using the same method. 
 Training and validation datasets can be downloaded via an external link in the competition homepage. 
-Test dataset will be provided later. All images have the same size, 2000(H) x 3000(W). 
+Test dataset will be provided later. All images have the same size, 768(H) x 1536(W). 
 
 The specific configuration of datasets is as follows: 
-* **Training** : Consists of 200 scenes, where each scene contains 9 RAW input frames and one GT RGB image. 
+* **Training** : Consists of 300 scenes, where each scene contains 9 RAW input frames and one GT RGB image. 
 * **Validation** : Consists of 20 scenes, and GT images are hidden from participants, but PSNR and SSIM results are evaluated and will be announced on the leaderboard. 
-* **Test** : Consists of 20 scenes, and both GT images and evaluation results are hidden from participants during the competition. The final ranking will be based on the
+* **Test** : Consists of 20 scenes, and both GT images and evaluation results are hidden from participants during the competition. The final ranking will be based only on the
   PSNR results of the test set.
 
 The downloaded training dataset contains 200 scenes, where each scene consists of nine input RAW frames ("Scene-xxx-in-0.tif" through "Scene-xxx-in-8.tif") and one ground
@@ -53,20 +53,32 @@ Therefore, the key point of this competition is struggling *"how to effectively 
 considering the characteristics of each frame."* 
 
 ## Baseline model
-The baseline model is given by a very simple U-net architecture. 
-The shape of input of the network follows `(batch x 9 x 2000 x 3000)`, and the output shape follows `(batch x 
-3 x 2000 x 3000)`.
-The basic loss implemented in this starting kit is MSE loss.
-Codes for computing PSNR and SSIM are provided in the utils folder.  
+The baseline model is given by a very simple concatenated U-net. 
+The shape of input of the network follows `(batch x 9 x 768 x 1536)`, and the output shape follows `(batch x 
+3 x 768 x 1536)`.
+The basic loss implemented in this starting kit is MSE loss. The trained model is provided in `checkpoint_dir` folder. 
+Its performance is as follows:
+> **\# of model parameters** : 7.701(M)  
+**Total FLOPs of the model** : 0.666(T)   
+**PSNR** : 31.0134dB  
+**SSIM** : 0.9581   
+
+## Requirements
+> python==3.8.10      
+> numpy==1.21.1    
+> opencv-python==4.7.0      
+> cuda==11.7    
+torch==1.13.1    
+torchvision==0.14.1   
 
 
 
 ## Submissions
-Participants can submit their trained models via code and trained parameters. 
-Each submission should include a zip file containing the network architecture (`my_network.py`), and the trained
-parameters (`my_parameters.pth`) saved by `model.state_dict()`. The submission system will evaluate the performance of the submitted model on the
+During the validation and test phases, the input images are opened to participants. Then, participants can submit their output images on the server. 
+For validation dataset, the submission system will evaluate the performance of the submitted model on the
 validation set and provide the average PSNR, SSIM scores with inference time, FLOPs, and the number of all parameters.
-Submission for each participant / team is limited up to 10 times per day. 
+For test datset, the results are hidden from participants. 
+Submission for each participant (team) is limited up to 10 times per day. 
 
 
 ## Other competition rules
