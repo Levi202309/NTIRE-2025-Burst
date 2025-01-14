@@ -30,16 +30,20 @@ from utils.checkpoint import *
 def train(num_threads, cuda, restart_train, mGPU):
     torch.set_num_threads(num_threads)
 
-    batch_size = 2
-    lr_decay = 0.9
+    batch_size = 8
+    lr_decay = 0.95
     lr = 2e-4
 
-    n_epoch = 500
+    n_epoch = 100000
 
     # checkpoint path
     checkpoint_dir = 'checkpoint_dir'
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
+    # output path
+    output_dir = 'output'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     # logs path
     logs_dir = 'logs_dir'
     if not os.path.exists(logs_dir):
@@ -105,7 +109,10 @@ def train(num_threads, cuda, restart_train, mGPU):
     for epoch in range(start_epoch, n_epoch):
         epoch_start_time = time.time()
         print('='*20, 'lr={}'.format([param['lr'] for param in optimizer.param_groups]), '='*20)
-        
+        avg_loss = 0
+        avg_psnr = 0
+        avg_ssim = 0
+        avg_step = 0
         for step, (burst_noise, gt) in enumerate(data_loader):
             t0 = time.time()
             if cuda:
@@ -119,28 +126,30 @@ def train(num_threads, cuda, restart_train, mGPU):
             optimizer.step()
             average_loss.update(loss)
             # pdb.set_trace()
-
             psnr = calculate_psnr(pred.unsqueeze(1), gt.unsqueeze(1))
             ssim = calculate_ssim(pred.unsqueeze(1), gt.unsqueeze(1))
+            avg_loss += loss.item()
+            avg_psnr += psnr
+            avg_ssim += ssim
+            avg_step += 1
             t1 = time.time()
-            # print
-            print('{:-4d}\t| epoch {:2d}\t| step {:4d}\t|'
-                  ' loss: {:.4f}\t| PSNR: {:.2f}dB\t| SSIM: {:.4f}\t| time:{:.2f} seconds.'
-                  .format(global_step, epoch, step, loss, psnr, ssim, t1-t0))
-            global_step += 1
             # save images
-            if step <20 :
+            if (epoch % 50 == 0) and (step < 20):
                 for frame in range(9):
                     pil_image = to_pil_image(burst_noise[0][frame])
-                    pil_image.save(f'./output/Batch{step}_input{frame}.png')
+                    pil_image.save(f'./{output_dir}/Batch{step}_input{frame}.png')
                 pil_image = to_pil_image(gt[0])
-                pil_image.save(f'./output/Batch{step}_gt.png')
+                pil_image.save(f'./{output_dir}/Batch{step}_gt.png')
                 pil_image = to_pil_image(pred[0])
-                pil_image.save(f'./output/Batch{step}_output_E{epoch}.png')
-            else:
-                break
-
+                pil_image.save(f'./{output_dir}/Batch{step}_output_E{epoch}.png')
+            # print
+            if step % 5 == 0:
+                print('{:-4d}\t| epoch {:2d}\t| step {:4d}\t|'
+                      ' loss: {:.4f}\t| PSNR: {:.2f}dB\t| SSIM: {:.4f}\t| time:{:.2f} seconds.'
+                      .format(global_step, epoch, step, loss, psnr, ssim, t1-t0))
+            global_step += 1
         print('Epoch {} is finished, time elapsed {:.2f} seconds.'.format(epoch, time.time() - epoch_start_time))
+        print('Average loss : {:.5f}\t| Average PSNR : {:.3f}\t| Average SSIM : {:.3f} \n'.format(avg_loss/avg_step, avg_psnr/avg_step, avg_ssim/avg_step))
         if epoch % 5 == 0:
             if average_loss.get_value() < best_loss:
                 is_best = True
@@ -159,6 +168,7 @@ def train(num_threads, cuda, restart_train, mGPU):
             save_checkpoint(
                 save_dict, is_best, checkpoint_dir, global_step, max_keep=5
             )
+
 
         # decay the learning rate
         lr_cur = [param['lr'] for param in optimizer.param_groups]
