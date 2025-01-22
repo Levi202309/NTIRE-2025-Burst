@@ -1,5 +1,5 @@
 """
-We refer the code made from
+We refer the code made from  
 https://github.com/z-bingo/kernel-prediction-networks-PyTorch/blob/master/train_eval_syn.py
 """
 
