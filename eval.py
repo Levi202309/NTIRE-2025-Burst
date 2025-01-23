@@ -10,15 +10,11 @@ from torch.utils.data import DataLoader
 import cv2
 import numpy as np
 from fvcore.nn import FlopCountAnalysis, flop_count_table
-import os, sys, time, shutil
+import os, time
 
-from PIL import Image
 from torchvision.transforms import transforms
-to_pil_image = transforms.ToPILImage()
-import torchvision.transforms.functional as F
 from DataLoader.custom_data_class import CustomDataset
 from models.unet_model import UNet
-import pdb
 
 from utils.utils import *
 from utils.checkpoint import *
@@ -121,12 +117,12 @@ def eval(cuda, mGPU=True):
             ii = i * 10
 
             cv2.imwrite(eval_dir + f'/' + names[ii][:-6] + f'out.tif', (pred[0]*255).permute(1,2,0).cpu().numpy().astype(np.uint8))
-            # cv2.imwrite(eval_dir + f'/' + names[ii][:-6] + f'gt.tif', (gt[0]*255).permute(1,2,0).cpu().numpy().astype(np.uint8))
+            cv2.imwrite(eval_dir + f'/' + names[ii][:-6] + f'gt.tif', (gt[0]*255).permute(1,2,0).cpu().numpy().astype(np.uint8))
             
             
             for frame in range(9):
-                # this is needed to keep the i
-                pass
+                # save input frames
+                cv2.imwrite(eval_dir + f'/' + names[ii][:-6] + f'input{frame}.tif', (burst_noise[0][frame] * 255).cpu().numpy().astype(np.uint8))
 
             
     end_time = time.time()
