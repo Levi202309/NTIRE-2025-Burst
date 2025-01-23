@@ -60,8 +60,8 @@ The basic loss implemented in this starting kit is MSE loss. For quick testing, 
 Its performance is as follows:
 > **\# of model parameters** : 7.701(M)  
 **Total FLOPs of the model** : 0.666(T)   
-**PSNR** : 31.0134dB  
-**SSIM** : 0.9581   
+**PSNR** : 31.01  
+**SSIM** : 0.958   
 
 ## Requirements
 > python==3.8.10      
