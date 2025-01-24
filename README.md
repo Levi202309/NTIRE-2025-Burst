@@ -22,8 +22,8 @@ Training and validation datasets can be downloaded via an external link in the c
 Test dataset will be provided later. All images have the same size, 768(H) x 1536(W). 
 
 The specific configuration of datasets is as follows: 
-* **Training** : Consists of 300 scenes, where each scene contains 9 RAW input frames and one GT RGB image. Training set can be downloaded from [google drive](https://drive.google.com/file/d/1ak7NFS5h2fu7QcV1CUfyAT48oAwWcrtE/view?usp=sharing,https://drive.google.com/file/d/1LZo_USTs4IplWZcIV7F6fX2_YH83T5mZ/view?usp=sharing).
-* **Validation** : Consists of 20 scenes, and GT images are hidden from participants, but PSNR and SSIM results are evaluated and will be announced on the leaderboard. Validation set can be downloaded from [google drive](https://drive.google.com/file/d/1QwPwa1dAfY14yCilDnx1_lrghNxoYyy4/view?usp=sharing).
+* **Training** : Consists of 300 scenes, where each scene contains 9 RAW input frames and one GT RGB image.
+* **Validation** : Consists of 20 scenes, and GT images are hidden from participants, but PSNR and SSIM results are evaluated and will be announced on the leaderboard. 
 * **Test** : Consists of 20 scenes, and both GT images and evaluation results are hidden from participants during the competition. The final ranking will be based only on the
   PSNR results of the test set.
 
