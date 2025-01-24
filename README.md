@@ -2,8 +2,6 @@
 <p align="center">
     <img src="./figure.png" width="883px" height="618px" title="Figure"/>
 
-![plot](./figure.png)
-
 ## Overview
 This is a competition held in CVPR 2025 New Trends in Image Restoration and Enhancement (NTIRE) workshop. The goal of
 this competition is to develop an efficient algorithm for burst HDR and restoration. 
