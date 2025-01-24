@@ -1,5 +1,8 @@
 # Efficient Burst HDR and Restoration
+<p align="center">
+    <img src="./figure.png" width="883px" height="618px" title="Figure"/>
 
+![plot](./figure.png)
 
 ## Overview
 This is a competition held in CVPR 2025 New Trends in Image Restoration and Enhancement (NTIRE) workshop. The goal of
@@ -44,9 +47,12 @@ This frame  is taken by a short exposure time, thus it has high noise level.
 3. **Scene-xxx-in-3.tif** to **Scene-xxx-in-5.tif** : These three frames have the middle exposure time, thus brighter than the reference frame, which means the level of noise is slightly decreased. 
 4. **Scene-xxx-in-6.tif** to **Scene-xxx-in-8.tif** : These three frames are made through high exposure time which have the lowest noise level.
 
->figure here
-
-
+<p align="center">
+<figure>
+    <img src="./DB.png" width="1000px" height="562px" title="DB_example"/>
+    <figcaption> (Although the image appears saturated for visualization purposes, the actual data values are not clipped and maintain accurate values.)
+    </figcaption>
+</figure>
 
 
 Therefore, the key point of this competition is struggling *"how to effectively utilize the information of input frames while
