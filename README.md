@@ -88,7 +88,7 @@ participants can submit their output images on the server. Submission during the
 ### How to test your model ? (and how to measure the model's number of parameters and FLOPs)
 1. Register your team in the [Google Spreadsheet](https://docs.google.com/spreadsheets/d/11U3h07nikI69hwjAORpajRZEMAw7sfWMjveoLgcinc0/edit?usp=sharing) and get your team ID.
 2. git clone https://github.com/Eve-ctr/RawFusion.git
-3. Download the test images from the [Google Driver](https://github.com/Eve-ctr/RawFusion/tree/main) to the folder `./testset`
+3. Download the test images from the [Google Drive](https://github.com/Eve-ctr/RawFusion/tree/main) to the folder `./testset`
 4. Put the code of your model in `./models/Model_[Your_Team_ID]_[Your_Model_Name].py` 
    * Please add only one file in the folder `./models`. Please do not add other submodules.
    * Please zero pad `[Your_Team_ID]` into two digits: e.g. 00, 01, 02
