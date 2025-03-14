@@ -8,7 +8,7 @@ this competition is to develop an efficient algorithm for burst HDR and restorat
 
 More precisely, this competition involves the following tasks:
 * **Multi-frame RAW image fusion** : The inputs are given as multi-frame RAW images that follow Bayer patterns (GRBG).
-* **HDR image synthesis** : The given nine frames have different brightness levels. The goal is to fuse these frames into a high dynamic range (HDR) image. 
+* **HDR image synthesis** : The given nine frames have different brightness levels. The goal is to fuse these frames into a High Dynamic Range (HDR) image. 
 * **Restoration** : The goal is to restore GT image from degraded RAW images, such as noise, translation, motion blur, and so on.
  
 Overall, it is challenging to study an efficient algorithm for both multi-frame fusion and restoration.
@@ -26,7 +26,7 @@ The specific configuration of datasets is as follows:
 * **Training** : Consists of 300 scenes, where each scene contains 9 RAW input frames and one GT RGB image. 
 * **Validation** : Consists of 20 scenes, and GT images are hidden from participants, but PSNR and SSIM results are evaluated and will be announced on the leaderboard. 
 * **Test** : Consists of 20 scenes, and both GT images and evaluation results are hidden from participants during the competition. The final ranking will be based only on the
-  PSNR results of the test set.
+  PSNR performance of the test set.
 
 The downloaded training dataset contains 200 scenes, where each scene consists of nine input RAW frames ("Scene-xxx-in-0.tif" through "Scene-xxx-in-8.tif") and one ground
 truth image ("Scene-xxx-gt.tif"). All training files (including GT images) are recommended to be stored in one folder, in the same level as the starting kit.
@@ -85,16 +85,16 @@ participants can submit their output images on the server. Submission during the
 
 
 
-### How to test your model ? (and how to measure the model's number of parameters and FLOPs)
-1. Register your team in the [Google Spreadsheet](https://docs.google.com/spreadsheets/d/11U3h07nikI69hwjAORpajRZEMAw7sfWMjveoLgcinc0/edit?usp=sharing) and get your team ID.
+### How to test your model ? (and how to measure the model's parameters and FLOPs)
+1. Register your team in the [Google Spreadsheet](https://docs.google.com/spreadsheets/d/11U3h07nikI69hwjAORpajRZEMAw7sfWMjveoLgcinc0/edit?usp=sharing) and get your `[Team_ID]`.
 2. git clone https://github.com/Eve-ctr/RawFusion.git
-3. Download the test images from the [Google Drive](https://drive.google.com/file/d/1RspScAjXluIFeS5gymqYSeWXWdPoHYG2/view?usp=sharing) to the folder `./testset`
+3. Download the test input images from the [Google Drive](https://drive.google.com/file/d/1RspScAjXluIFeS5gymqYSeWXWdPoHYG2/view?usp=sharing) to the folder `./testset`
 4. Put the code of your model in `./models/Model_[Your_Team_ID]_[Your_Model_Name].py` 
    * Please add only one file in the folder `./models`. Please do not add other submodules.
    * Please zero pad `[Your_Team_ID]` into two digits: e.g. 00, 01, 02
 5. Put the pretrained model in `./model_zoo/[Your_Team_ID]_[Your_Model_Name].[pth or pt]`
    * Please zero pad `[Your_Team_ID]` into two digits: e.g. 00, 01, 02
-   * Modify My model in test demo.py to import your model in `./test_demo.py` as follows:
+   * Modify `My_model` in test demo.py to import your model in `./test_demo.py` as follows:
     ```python
     """import your models here!"""
     from models.Model_00_unet import UNet as My_model
@@ -104,7 +104,7 @@ participants can submit their output images on the server. Submission during the
    > To ensure a fair comparison between participants, please do not modify other codes as much as possible.  
    > Only allow minimal modifications to make your model code work.
 7. After confirming that your model is working properly, please send us the command to download your code, e.g.,  
-   * `git clone [Your repository link].`  
+   * `git clone [Your repository link]`, or Google Drive link, or mail, etc.
    * Organizers will check the model parameters and FLOPs limits and verify that the submitted images are indeed reproducible.
  
 ## Other competition rules
