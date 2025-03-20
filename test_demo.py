@@ -10,14 +10,10 @@ from PIL import Image
 from torchvision.transforms import transforms
 to_pil_image = transforms.ToPILImage()
 import torchvision.transforms.functional as F
-# from DataLoader.custom_data_class import CustomDataset
-# from utils.utils import *
-# from utils.checkpoint import *
-
+from collections import OrderedDict
 
 """import your models here!"""
-from models.Model_0_unet import UNet as My_model
-
+from models.Model_02_SFHformer import SFHformer2 as My_model
 
 
 class CustomDataset(torch.utils.data.Dataset):
@@ -64,10 +60,8 @@ def test(cuda=True, mGPU=True):
     data_loader = torch.utils.data.DataLoader(data_set, batch_size=1, shuffle=False)
     print("Length of the data_loader :", len(data_loader))
 
-
-
     """ Your model will be loaded here, via submitted pytorch code and trained parameters."""
-    model = My_model()
+    model = My_model(9,3,1,3)
     if cuda:
         model = model.cuda()
         device = torch.device("cuda:0")
@@ -77,12 +71,51 @@ def test(cuda=True, mGPU=True):
     # load trained model parameters
     if mGPU:
         model = nn.DataParallel(model)
-    model.load_state_dict(torch.load('./model_zoo/Ckpt_0_Organizer_team.pth', weights_only=True))
+    
+    # 修复模型加载部分
+    checkpoint = torch.load('./model_zoo/02_SFHformer.pth')
+    
+    # 处理权重的嵌套问题
+    if 'params' in checkpoint:
+        state_dict = checkpoint['params']
+    else:
+        state_dict = checkpoint
+    
+    # 如果模型使用了DataParallel但权重没有"module."前缀，则添加
+    if mGPU and next(iter(state_dict.keys())).startswith('module.') is False:
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            new_state_dict['module.' + k] = v
+        state_dict = new_state_dict
+    
+    # 如果模型没有使用DataParallel但权重有"module."前缀，则移除
+    elif not mGPU and next(iter(state_dict.keys())).startswith('module.'):
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            new_state_dict[k[7:]] = v  # 去掉前面的"module."
+        state_dict = new_state_dict
+    
+    # 使用strict=False允许加载部分参数
+    model.load_state_dict(state_dict, strict=False)
     print('The model has been completely loaded from the user submission.')
 
     # print parameters and flops
+    
+    # I encountered a memory overflow issue while calculating floating-point operations.
+    #  If your graphics card memory overflows, you can replace the following two lines with this code:
+    '''
+    smaller_input = torch.ones(1, 9, 192, 384).to(device)  # 尺寸缩小为原来的1/4
+    flops = FlopCountAnalysis(model, smaller_input)
+    # 由于大多数CNN操作的FLOP与分辨率成正比，可以根据比例关系估算
+    scaling_factor = (768 * 1536) / (192 * 384)  # = 16
+    estimated_flops = flops.total() * scaling_factor
+    print(f"Estimated FLOPS (based on smaller input): {estimated_flops / (1000**4):.3f} T")
+    print(flop_count_table(flops))
+    '''
+
     flops = FlopCountAnalysis(model, torch.ones(1, 9, 768, 1536).to(device))
     print(flop_count_table(flops))
+
 
     num_params = sum(p.numel() for p in model.parameters())
     print("\n" + "="*20 +" Model params and FLOPs " + "="*20)
@@ -90,7 +123,6 @@ def test(cuda=True, mGPU=True):
     print(f"\tTotal FLOPs of the model : {flops.total() / (1000**4) :.3f} T")
     print("=" * 64)
     print('\n------- Fusion started -------\n')
-
 
     model.eval()
 
@@ -114,12 +146,9 @@ def test(cuda=True, mGPU=True):
                 
             pred = torch.clamp(pred, 0.0, 1.0)
             
-            
-            
             if cuda:
                 pred = pred.cpu()
                 burst_noise = burst_noise.cpu()
-
 
             # to save the output image
             names = os.listdir("./testset")
@@ -127,8 +156,6 @@ def test(cuda=True, mGPU=True):
             out_file_name = test_dir + f'/' + names[ii][:-9] + f'-out.tif'
             cv2.imwrite(out_file_name, (pred[0]*255).permute(1,2,0).cpu().numpy().astype(np.uint8))
             print(f'{i+1}-th image is completed.\t| {out_file_name} \t| time: {timei:.2f} ms.')
-
-
             
     mean_time=np.mean(timings)
     print(f'Total Validation time : {mean_time: .2f} ms.')
