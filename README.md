@@ -4,7 +4,7 @@
 
 - I ran into a memory overflow problem while calculating the FLOP. Using this annotated code can avoid memory overflow issues.
 
-![image-20250320105357688](C:\Users\86183\AppData\Roaming\Typora\typora-user-images\image-20250320105357688.png)
+![image-20250320105357688](image-20250320105357688.png)
 
 
 
